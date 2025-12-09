@@ -1,4 +1,4 @@
-TYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -372,6 +372,7 @@ TYPE html>
     let redirectTimer = null;
     let isWeChat = /MicroMessenger/i.test(navigator.userAgent);
     let historyState = null;
+    let isNormalNavigation = false; // 标记是否是正常跳转
     
     // 检查是否需要重定向（从其他页面返回）
     if (sessionStorage.getItem("redirectToIndex") === "true") {
@@ -418,6 +419,11 @@ TYPE html>
     
     // 使用 visibilitychange 检测页面隐藏（微信浏览器更可靠）
     document.addEventListener("visibilitychange", () => {
+      // 如果是正常跳转，不触发防误关
+      if (isNormalNavigation) {
+        isNormalNavigation = false;
+        return;
+      }
       if (document.hidden && exitGuardEnabled) {
         if (isWeChat) {
           // 微信浏览器中，显示弹窗
@@ -448,6 +454,12 @@ TYPE html>
     
     // pagehide 事件（微信浏览器支持）
     window.addEventListener("pagehide", (e) => {
+      // 如果是正常跳转，不触发防误关
+      if (isNormalNavigation) {
+        isNormalNavigation = false;
+        sessionStorage.removeItem("redirectToIndex");
+        return;
+      }
       if (!exitGuardEnabled) return;
       if (isWeChat) {
         // 微信浏览器中，尝试阻止
@@ -530,10 +542,15 @@ TYPE html>
         if (paymentUrl.includes("你的收款链接")) {
           link.textContent = "请先替换收款链接";
         }
+        // 标记为正常跳转，避免触发防误关
+        link.addEventListener("click", () => {
+          isNormalNavigation = true;
+          sessionStorage.removeItem("redirectToIndex");
+          shouldRedirect = false;
+        });
       });
     })();
   </script>
 </body>
 </html>
-
 
