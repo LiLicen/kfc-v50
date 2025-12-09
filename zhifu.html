@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="theme-color" content="#06c160" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>支付页</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #fff;
+      --green: #06c160;
+      --text: #1f2937;
+      --sub: #4b5563;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    .card {
+      width: min(420px, 92vw);
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      padding: 22px 20px 26px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+    p {
+      margin: 0 0 16px;
+      color: var(--sub);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .qr-wrap {
+      background: #f1f5f9;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      display: inline-block;
+    }
+    .qr {
+      width: 260px;
+      max-width: 70vw;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+    }
+    .btn {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 25px rgba(6, 193, 96, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); box-shadow: 0 6px 18px rgba(6,193,96,0.2); }
+    .btn {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (max-width: 640px) {
+      .btn {
+        padding: 14px 20px;
+        font-size: 16px;
+        min-height: 48px;
+      }
+      .card {
+        padding: 20px 16px 24px;
+      }
+      #exit-escape {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-height: 36px;
+        touch-action: manipulation;
+      }
+      #exit-mask > div {
+        padding: 12px !important;
+      }
+      #exit-mask > div > div {
+        max-width: 92vw !important;
+        padding: 16px 16px 12px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="exit-escape" style="position:fixed; left:12px; bottom:12px; padding:6px 10px; font-size:12px; border-radius:999px; border:1px solid #888; background:#222; color:#fff; opacity:0.85; z-index:1000; cursor:pointer; transition:all 0.2s ease;">退出防误关</button>
+  <div id="exit-mask" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); backdrop-filter:blur(2px); z-index:999; touch-action:none; -webkit-overflow-scrolling:touch;">
+    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto;">
+      <div style="background:#fff; max-width:360px; width:100%; border-radius:16px; box-shadow:0 18px 40px rgba(0,0,0,0.2); padding:18px 18px 14px; text-align:left; font-family:'PingFang SC','Segoe UI',Arial,sans-serif; margin:auto;">
+        <div id="exit-title" style="font-weight:800; font-size:18px; color:#111; margin-bottom:6px;">确认离开？</div>
+        <div id="exit-desc" style="color:#444; line-height:1.6; font-size:14px; margin-bottom:14px;">
+          再等等，别错过今晚的炸鸡。
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="exit-stay" style="flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid #e5e7eb; background:#f8fafc; cursor:pointer; font-weight:700; touch-action:manipulation; -webkit-tap-highlight-color:transparent; min-height:44px; font-size:15px;">我再想想</button>
+          <button id="exit-go" style="flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid #f2a300; background:linear-gradient(120deg,#ffce45,#ffb703); color:#3a2a00; cursor:pointer; font-weight:800; touch-action:manipulation; -webkit-tap-highlight-color:transparent; min-height:44px; font-size:15px;">我坚持离开</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1>扫码付款</h1>
+    <p>今晚请我吃炸鸡，v我50！若未自动跳转，请保存二维码后在微信内扫码。</p>
+    <div id="slogan" style="text-align:left; background:#f8fafc; border:1px dashed #e5e7eb; border-radius:12px; padding:12px 14px; color:#374151; font-size:14px; line-height:1.6; margin:0 0 12px;">
+      今日口号加载中…
+    </div>
+    <div class="qr-wrap">
+      <img class="qr" src="qrcode.jpg" alt="收款码" loading="lazy" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='block';" />
+    </div>
+    <div style="display:none; padding:12px; background:#fee; border:1px dashed #fcc; border-radius:8px; color:#c33; font-size:13px; margin-top:12px;">二维码加载失败，请检查 qrcode.jpg 文件是否存在</div>
+    <div>
+      <a class="btn" href="qrcode.jpg" download>保存二维码</a>
+      <a class="btn" style="background:#334155; box-shadow:0 10px 25px rgba(51,65,85,0.25);" href="index.html">返回主页</a>
+    </div>
+  </div>
+  <script>
+    // 防误关：页面内多层确认
+    let exitGuardEnabled = true;
+    let exitStep = 0;
+    let escapeClickStep = 0;
+    const maxSteps = 99;
+    const escapeRequired = 99;
+    const messages = [
+      "再等等，别错过今晚的炸鸡。",
+      "还没 V 我 50 呢，再留一会儿。",
+      "离开就没桶鸡香了，慎重。",
+      "疯狂星期四还没开始呢，别急。",
+      "前方高能：炸鸡快乐正在加载。",
+      "等等看，说不定下一口更香。",
+      "V 我 50，就能续杯快乐。",
+      "别走，薯条还热着呢。",
+      "离开前想想鸡皮的酥脆。",
+      "今晚的吮指时刻等你解锁。",
+      "赞助 50，快乐自助开餐。",
+      "退一步，鸡香少一步。",
+      "手别抖，优惠在招手。",
+      "走慢点，炸鸡跟不上你。",
+      "冲桶倒计时，别点错。",
+      "再想三秒，奖励一口鸡腿。",
+      "放弃充值=放弃酥脆自由。",
+      "你的炸鸡基金还在等你。",
+      "再停留一下，快乐翻倍。",
+      "认真！桶鸡只差 50 元。",
+      "你走了吗？炸鸡哭了。",
+      "按下离开键=炸鸡打烊。",
+      "别急，鸡腿马上出锅。",
+      "疯狂不等人，鸡肉等你。",
+      "点确认前，先闻一下想象的香味。",
+      "心软一下，鸡皮更脆。",
+      "再留一会儿，薯条不会凉。",
+      "V50=欢乐入账，走开=错过。",
+      "倒数 3 秒，给炸鸡一次机会。",
+      "真的要走？酥脆自由说不。"
+    ];
+    function randomColor() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      const textColor = lum > 186 ? "#111" : "#fff";
+      return { bg: `rgb(${r},${g},${b})`, text: textColor, border: textColor === "#fff" ? "#f1f5f9" : "#111" };
+    }
+    function moveEscapeButton() {
+      const btn = document.getElementById("exit-escape");
+      if (!btn) return;
+      const margin = 20;
+      const vw = Math.max(window.innerWidth - btn.offsetWidth - margin * 2, 60);
+      const vh = Math.max(window.innerHeight - btn.offsetHeight - margin * 2, 60);
+      const left = Math.floor(Math.random() * vw) + margin;
+      const top = Math.floor(Math.random() * vh) + margin;
+      const { bg, text, border } = randomColor();
+      btn.style.left = `${left}px`;
+      btn.style.top = `${top}px`;
+      btn.style.bottom = "auto";
+      btn.style.right = "auto";
+      btn.style.background = bg;
+      btn.style.color = text;
+      btn.style.borderColor = border;
+    }
+    function showExitModal() {
+      const mask = document.getElementById("exit-mask");
+      const title = document.getElementById("exit-title");
+      const desc = document.getElementById("exit-desc");
+      if (!mask || !title || !desc) return;
+      desc.textContent = messages[Math.min(exitStep, messages.length - 1)];
+      mask.style.display = "block";
+      moveEscapeButton();
+    }
+    function hideExitModal() {
+      const mask = document.getElementById("exit-mask");
+      if (mask) mask.style.display = "none";
+    }
+    let shouldRedirect = false;
+    let redirectTimer = null;
+    
+    // 检查是否需要重定向（从其他页面返回）
+    if (sessionStorage.getItem("redirectToIndex") === "true") {
+      sessionStorage.removeItem("redirectToIndex");
+      // 延迟重定向，确保页面已加载
+      setTimeout(() => {
+        try {
+          window.location.replace("index.html");
+        } catch (err) {
+          // 忽略错误
+        }
+      }, 50);
+    }
+    
+    window.addEventListener("beforeunload", (e) => {
+      if (!exitGuardEnabled) return;
+      e.preventDefault();
+      e.returnValue = "";
+      showExitModal();
+      shouldRedirect = true;
+      // 使用 sessionStorage 标记需要重定向
+      sessionStorage.setItem("redirectToIndex", "true");
+    });
+    
+    // 使用 visibilitychange 检测页面隐藏（更可靠）
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && shouldRedirect && exitGuardEnabled) {
+        // 延迟重定向，给浏览器更多时间
+        redirectTimer = setTimeout(() => {
+          try {
+            window.location.replace("index.html");
+          } catch (err) {
+            // 忽略错误
+          }
+        }, 100);
+      } else if (!document.hidden && redirectTimer) {
+        clearTimeout(redirectTimer);
+        redirectTimer = null;
+      }
+    });
+    
+    // 备用方案：unload 事件
+    window.addEventListener("unload", () => {
+      if (shouldRedirect && exitGuardEnabled) {
+        try {
+          // 使用同步方式尝试重定向
+          window.location.replace("index.html");
+        } catch (err) {
+          // 忽略错误
+        }
+      }
+    });
+    
+    // 备用方案：pagehide 事件
+    window.addEventListener("pagehide", () => {
+      if (shouldRedirect && exitGuardEnabled) {
+        try {
+          window.location.replace("index.html");
+        } catch (err) {
+          // 忽略错误
+        }
+      }
+    });
+    window.addEventListener("DOMContentLoaded", () => {
+      const stay = document.getElementById("exit-stay");
+      const go = document.getElementById("exit-go");
+      const escape = document.getElementById("exit-escape");
+      stay?.addEventListener("click", () => {
+        exitStep = 0;
+        shouldRedirect = false;
+        sessionStorage.removeItem("redirectToIndex");
+        if (redirectTimer) {
+          clearTimeout(redirectTimer);
+          redirectTimer = null;
+        }
+        hideExitModal();
+      });
+      go?.addEventListener("click", () => {
+        exitStep += 1;
+        if (exitStep >= maxSteps) {
+          exitGuardEnabled = false;
+          hideExitModal();
+          alert("防误关已解除，如需离开可直接关闭页面。");
+        } else {
+          showExitModal();
+        }
+      });
+      escape?.addEventListener("click", () => {
+        escapeClickStep += 1;
+        if (escapeClickStep >= escapeRequired) {
+          exitGuardEnabled = false;
+          hideExitModal();
+          alert("防误关已解除，你可直接关闭页面。");
+        } else {
+          moveEscapeButton();
+        }
+      });
+      moveEscapeButton();
+    });
+
+    (function randomSlogan() {
+      const slogans = [
+        "疯狂星期四，赞助我 50，今晚你我都是炸鸡英雄。",
+        "点我扫码 V50，换你一份吮指回忆。",
+        "投喂 50，让油炸的快乐直达心灵。",
+        "友情充值 50 元，立刻解锁“桶吃自由”。",
+        "小额 50，快乐暴击，鸡香加倍。",
+        "今天的快乐预算：50 元炸鸡基金，安排！",
+        "V 我 50，当一回炸鸡贵宾。",
+        "50 元走起，换一整天的鸡香好运气。"
+      ];
+      const el = document.getElementById("slogan");
+      if (!el || !slogans.length) return;
+      const pick = slogans[Math.floor(Math.random() * slogans.length)];
+      el.textContent = pick;
+    })();
+  </script>
+</body>
+</html>
+

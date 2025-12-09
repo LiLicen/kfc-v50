@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="theme-color" content="#e4002b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <style>
+    :root {
+      --kfc-red: #e4002b;
+      --kfc-black: #111;
+      --kfc-gold: #f4b400;
+      --bg: #fdf9f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #fff5f2 0, #fde7e2 30%, var(--bg) 70%);
+      color: var(--kfc-black);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    header {
+      padding: 32px 24px 12px;
+      text-align: center;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: var(--kfc-red);
+      font-size: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--kfc-red);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+    .hero {
+      background: #fff;
+      border: 2px solid var(--kfc-red);
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 18px 40px rgba(228, 0, 43, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(228,0,43,0.08), transparent 45%);
+      pointer-events: none;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 36px;
+      line-height: 1.1;
+    }
+    .cta {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cta a {
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 15px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s;
+      text-decoration: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .primary {
+      background: var(--kfc-red);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(228, 0, 43, 0.25);
+    }
+    .primary:hover { transform: translateY(-1px); }
+    .pay {
+      background: linear-gradient(120deg, #ffce45, #ffb703);
+      color: #3a2a00;
+      box-shadow: 0 10px 25px rgba(255, 183, 3, 0.35);
+      border: 1px solid #f2a300;
+    }
+    .pay:hover { transform: translateY(-1px) scale(1.01); }
+    .ghost {
+      background: #fff;
+      color: var(--kfc-black);
+      border: 1px solid #ddd;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 26px 0 10px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #f1d9d9;
+      box-shadow: 0 10px 28px rgba(17, 17, 17, 0.04);
+    }
+    .card h3 {
+      margin: 0 0 6px;
+      color: var(--kfc-red);
+      font-size: 18px;
+    }
+    .card p {
+      margin: 0;
+      color: #444;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .steps {
+      margin-top: 28px;
+      background: linear-gradient(120deg, #fff2f4, #ffe9ec);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #ffd5dd;
+    }
+    .steps h2 { margin: 0 0 12px; }
+    .step-list {
+      display: grid;
+      gap: 8px;
+    }
+    .step {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px dashed #f7c6c6;
+    }
+    .step strong {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--kfc-red);
+      color: #fff;
+      font-size: 14px;
+    }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #777;
+      font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 30px; }
+      .cta a {
+        padding: 14px 18px;
+        font-size: 16px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero {
+        padding: 20px 16px;
+      }
+      main {
+        padding: 0 16px 40px;
+      }
+      header {
+        padding: 24px 16px 8px;
+      }
+      .logo {
+        font-size: 20px;
+      }
+      #exit-escape {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-height: 36px;
+        touch-action: manipulation;
+      }
+      #exit-mask > div {
+        padding: 12px !important;
+      }
+      #exit-mask > div > div {
+        max-width: 92vw !important;
+        padding: 16px 16px 12px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="exit-escape" style="position:fixed; left:12px; bottom:12px; padding:6px 10px; font-size:12px; border-radius:999px; border:1px solid #888; background:#222; color:#fff; opacity:0.85; z-index:1000; cursor:pointer; transition:all 0.2s ease;">退出防误关</button>
+      <div id="exit-mask" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); backdrop-filter:blur(2px); z-index:999; touch-action:none; -webkit-overflow-scrolling:touch;">
+    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto;">
+      <div style="background:#fff; max-width:360px; width:100%; border-radius:16px; box-shadow:0 18px 40px rgba(0,0,0,0.2); padding:18px 18px 14px; text-align:left; font-family:'PingFang SC','Segoe UI',Arial,sans-serif; margin:auto;">
+        <div id="exit-title" style="font-weight:800; font-size:18px; color:#111; margin-bottom:6px;">确认离开？</div>
+        <div id="exit-desc" style="color:#444; line-height:1.6; font-size:14px; margin-bottom:14px;">
+          再等等，别错过今晚的炸鸡。
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="exit-stay" style="flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid #e5e7eb; background:#f8fafc; cursor:pointer; font-weight:700; touch-action:manipulation; -webkit-tap-highlight-color:transparent; min-height:44px; font-size:15px;">我再想想</button>
+          <button id="exit-go" style="flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid #f2a300; background:linear-gradient(120deg,#ffce45,#ffb703); color:#3a2a00; cursor:pointer; font-weight:800; touch-action:manipulation; -webkit-tap-highlight-color:transparent; min-height:44px; font-size:15px;">我坚持离开</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <span>🍗 KFC</span>
+      <span class="badge">疯狂星期四</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>疯狂星期四，直接 V 我 50！</h1>
+      <div class="cta">
+        <a class="primary pay" id="pay-link" href="#" target="_blank" rel="noopener">直接 V 我 50</a>
+        <a class="primary pay" id="pay-link-v" href="#" target="_blank" rel="noopener">V 你 50</a>
+        <a class="ghost" href="https://www.kfc.com.cn/kfccda/index.aspx" target="_blank" rel="noopener">顺便看看 KFC 菜单</a>
+      </div>
+      <div style="margin-top:18px; display:flex; flex-direction:column; align-items:flex-start; gap:8px;">
+        <div style="font-weight:700; color:#111;">扫码也行：</div>
+        <img src="qrcode.jpg" alt="收款码" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width:220px; max-width:60vw; border:8px solid #fff; border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,0.08);" />
+        <div style="display:none; padding:12px; background:#fee; border:1px dashed #fcc; border-radius:8px; color:#c33; font-size:13px;">二维码加载失败，请检查 qrcode.jpg 文件是否存在</div>
+      </div>
+    </section>
+
+    <div class="features">
+      <div class="card">
+        <h3>氛围感拉满</h3>
+        <p>专属主题色 + 炸鸡表情，一眼就懂今天要吃肯德基。</p>
+      </div>
+      <div class="card">
+        <h3>一句话即刻用</h3>
+        <p>“疯狂星期四，v我50”直接复制，省心省力。</p>
+      </div>
+      <div class="card">
+        <h3>分享更好玩</h3>
+        <p>把链接甩给朋友，组队凑单，快乐多一点。</p>
+      </div>
+    </div>
+
+    <section class="steps">
+      <h2>2 步到位</h2>
+      <div class="step-list">
+        <div class="step">
+          <strong>1</strong>
+          <div>点击按钮跳转到支付页或直接扫码。</div>
+        </div>
+        <div class="step">
+          <strong>2</strong>
+          <div>完成付款，坐等快乐炸鸡。</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    友情提示：理性消费，快乐吃鸡。
+  </footer>
+
+  <script>
+    // 已内置跳转到支付页，如需改为其他收款链接，替换下行即可
+    const paymentUrl = "zhifu.html";
+
+    // 防误关：页面内多层确认
+    let exitGuardEnabled = true;
+    let exitStep = 0;
+    let escapeClickStep = 0;
+    const maxSteps = 99;
+    const escapeRequired = 99;
+    const messages = [
+      "再等等，别错过今晚的炸鸡。",
+      "还没 V 我 50 呢，再留一会儿。",
+      "离开就没桶鸡香了，慎重。",
+      "疯狂星期四还没开始呢，别急。",
+      "前方高能：炸鸡快乐正在加载。",
+      "等等看，说不定下一口更香。",
+      "V 我 50，就能续杯快乐。",
+      "别走，薯条还热着呢。",
+      "离开前想想鸡皮的酥脆。",
+      "今晚的吮指时刻等你解锁。",
+      "赞助 50，快乐自助开餐。",
+      "退一步，鸡香少一步。",
+      "手别抖，优惠在招手。",
+      "走慢点，炸鸡跟不上你。",
+      "冲桶倒计时，别点错。",
+      "再想三秒，奖励一口鸡腿。",
+      "放弃充值=放弃酥脆自由。",
+      "你的炸鸡基金还在等你。",
+      "再停留一下，快乐翻倍。",
+      "认真！桶鸡只差 50 元。",
+      "你走了吗？炸鸡哭了。",
+      "按下离开键=炸鸡打烊。",
+      "别急，鸡腿马上出锅。",
+      "疯狂不等人，鸡肉等你。",
+      "点确认前，先闻一下想象的香味。",
+      "心软一下，鸡皮更脆。",
+      "再留一会儿，薯条不会凉。",
+      "V50=欢乐入账，走开=错过。",
+      "倒数 3 秒，给炸鸡一次机会。",
+      "真的要走？酥脆自由说不。"
+    ];
+    function randomColor() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      const textColor = lum > 186 ? "#111" : "#fff";
+      return { bg: `rgb(${r},${g},${b})`, text: textColor, border: textColor === "#fff" ? "#f1f5f9" : "#111" };
+    }
+    function moveEscapeButton() {
+      const btn = document.getElementById("exit-escape");
+      if (!btn) return;
+      const margin = 20;
+      const vw = Math.max(window.innerWidth - btn.offsetWidth - margin * 2, 60);
+      const vh = Math.max(window.innerHeight - btn.offsetHeight - margin * 2, 60);
+      const left = Math.floor(Math.random() * vw) + margin;
+      const top = Math.floor(Math.random() * vh) + margin;
+      const { bg, text, border } = randomColor();
+      btn.style.left = `${left}px`;
+      btn.style.top = `${top}px`;
+      btn.style.bottom = "auto";
+      btn.style.right = "auto";
+      btn.style.background = bg;
+      btn.style.color = text;
+      btn.style.borderColor = border;
+    }
+    function showExitModal() {
+      const mask = document.getElementById("exit-mask");
+      const title = document.getElementById("exit-title");
+      const desc = document.getElementById("exit-desc");
+      if (!mask || !title || !desc) return;
+      desc.textContent = messages[Math.min(exitStep, messages.length - 1)];
+      mask.style.display = "block";
+      moveEscapeButton();
+    }
+    function hideExitModal() {
+      const mask = document.getElementById("exit-mask");
+      if (mask) mask.style.display = "none";
+    }
+    let shouldRedirect = false;
+    let redirectTimer = null;
+    
+    // 检查是否需要重定向（从其他页面返回）
+    if (sessionStorage.getItem("redirectToIndex") === "true") {
+      sessionStorage.removeItem("redirectToIndex");
+      // 已经在 index.html，不需要重定向
+    }
+    
+    window.addEventListener("beforeunload", (e) => {
+      if (!exitGuardEnabled) return;
+      e.preventDefault();
+      e.returnValue = "";
+      showExitModal();
+      shouldRedirect = true;
+      // 使用 sessionStorage 标记需要重定向
+      sessionStorage.setItem("redirectToIndex", "true");
+    });
+    
+    // 使用 visibilitychange 检测页面隐藏（更可靠）
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && shouldRedirect && exitGuardEnabled) {
+        // 延迟重定向，给浏览器更多时间
+        redirectTimer = setTimeout(() => {
+          try {
+            window.location.replace("index.html");
+          } catch (err) {
+            // 忽略错误
+          }
+        }, 100);
+      } else if (!document.hidden && redirectTimer) {
+        clearTimeout(redirectTimer);
+        redirectTimer = null;
+      }
+    });
+    
+    // 备用方案：unload 事件
+    window.addEventListener("unload", () => {
+      if (shouldRedirect && exitGuardEnabled) {
+        try {
+          // 使用同步方式尝试重定向
+          window.location.replace("index.html");
+        } catch (err) {
+          // 忽略错误
+        }
+      }
+    });
+    
+    // 备用方案：pagehide 事件
+    window.addEventListener("pagehide", () => {
+      if (shouldRedirect && exitGuardEnabled) {
+        try {
+          window.location.replace("index.html");
+        } catch (err) {
+          // 忽略错误
+        }
+      }
+    });
+    window.addEventListener("DOMContentLoaded", () => {
+      const stay = document.getElementById("exit-stay");
+      const go = document.getElementById("exit-go");
+      const escape = document.getElementById("exit-escape");
+      stay?.addEventListener("click", () => {
+        exitStep = 0;
+        shouldRedirect = false;
+        sessionStorage.removeItem("redirectToIndex");
+        if (redirectTimer) {
+          clearTimeout(redirectTimer);
+          redirectTimer = null;
+        }
+        hideExitModal();
+      });
+      go?.addEventListener("click", () => {
+        exitStep += 1;
+        if (exitStep >= maxSteps) {
+          exitGuardEnabled = false;
+          hideExitModal();
+          // 提示用户可手动关闭/刷新
+          alert("防误关已解除，如需离开可直接关闭页面。");
+        } else {
+          showExitModal();
+        }
+      });
+      escape?.addEventListener("click", () => {
+        escapeClickStep += 1;
+        if (escapeClickStep >= escapeRequired) {
+          exitGuardEnabled = false;
+          hideExitModal();
+          alert("防误关已解除，你可直接关闭页面。");
+        } else {
+          moveEscapeButton();
+        }
+      });
+      moveEscapeButton();
+    });
+
+    // 设置收款按钮链接
+    (function initPayLink() {
+      const links = [document.getElementById("pay-link"), document.getElementById("pay-link-v")].filter(Boolean);
+      links.forEach(link => {
+        link.href = paymentUrl;
+        if (paymentUrl.includes("你的收款链接")) {
+          link.textContent = "请先替换收款链接";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
