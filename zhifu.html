@@ -147,6 +147,13 @@
     </div>
   </div>
   <script>
+    // 全局错误处理，防止微信浏览器中因错误导致页面无法加载
+    window.addEventListener('error', function(e) {
+      console.warn('Error caught:', e.message);
+      // 不阻止页面继续执行
+      return true;
+    });
+    
     // 防误关：页面内多层确认
     let exitGuardEnabled = true;
     let exitStep = 0;
@@ -230,38 +237,66 @@
     let isNormalNavigation = false; // 标记是否是正常跳转
     
     // 检查是否需要重定向（从其他页面返回）
-    if (sessionStorage.getItem("redirectToIndex") === "true") {
-      sessionStorage.removeItem("redirectToIndex");
-      // 延迟重定向，确保页面已加载
-      setTimeout(() => {
+    // 检查是否需要重定向（从其他页面返回）
+    try {
+      if (sessionStorage.getItem("redirectToIndex") === "true") {
         try {
-          window.location.replace("index.html");
+          sessionStorage.removeItem("redirectToIndex");
         } catch (err) {
           // 忽略错误
         }
-      }, 50);
+        // 延迟重定向，确保页面已加载
+        setTimeout(() => {
+          try {
+            window.location.replace("index.html");
+          } catch (err) {
+            // 忽略错误
+          }
+        }, 50);
+      }
+    } catch (err) {
+      // 如果 sessionStorage 不支持，忽略
     }
     
     // 微信浏览器特殊处理：拦截返回按钮
     if (isWeChat) {
-      // 添加历史记录，用于拦截返回
-      history.pushState({ page: 'zhifu' }, '', window.location.href);
-      historyState = { page: 'zhifu' };
+      try {
+        // 添加历史记录，用于拦截返回
+        history.pushState({ page: 'zhifu' }, '', window.location.href);
+        historyState = { page: 'zhifu' };
+      } catch (err) {
+        // 如果 history API 不支持，继续执行其他功能
+        console.warn('History API not supported:', err);
+      }
       
       // 拦截返回按钮
       window.addEventListener("popstate", (e) => {
-        if (!exitGuardEnabled) return;
-        e.preventDefault();
-        showExitModal();
-        // 重新添加历史记录
-        history.pushState(historyState, '', window.location.href);
+        try {
+          if (!exitGuardEnabled) return;
+          e.preventDefault();
+          showExitModal();
+          // 重新添加历史记录
+          if (historyState) {
+            history.pushState(historyState, '', window.location.href);
+          }
+        } catch (err) {
+          // 忽略错误，继续执行
+        }
       });
       
       // 微信 JS Bridge 处理（如果可用）
-      if (typeof WeixinJSBridge !== 'undefined') {
-        document.addEventListener('WeixinJSBridgeReady', () => {
-          WeixinJSBridge.call('hideOptionMenu');
-        });
+      try {
+        if (typeof WeixinJSBridge !== 'undefined') {
+          document.addEventListener('WeixinJSBridgeReady', () => {
+            try {
+              WeixinJSBridge.call('hideOptionMenu');
+            } catch (err) {
+              // 忽略错误，继续执行
+            }
+          });
+        }
+      } catch (err) {
+        // 忽略错误，继续执行
       }
     }
     
@@ -319,7 +354,11 @@
       // 如果是正常跳转，不触发防误关
       if (isNormalNavigation) {
         isNormalNavigation = false;
-        sessionStorage.removeItem("redirectToIndex");
+        try {
+          sessionStorage.removeItem("redirectToIndex");
+        } catch (err) {
+          // 忽略错误
+        }
         return;
       }
       if (!exitGuardEnabled) return;
@@ -328,7 +367,11 @@
         e.preventDefault();
         showExitModal();
         shouldRedirect = true;
-        sessionStorage.setItem("redirectToIndex", "true");
+        try {
+          sessionStorage.setItem("redirectToIndex", "true");
+        } catch (err) {
+          // 忽略错误
+        }
       } else if (shouldRedirect) {
         try {
           window.location.replace("index.html");
@@ -350,8 +393,12 @@
     });
     // 页面加载时立即初始化（微信浏览器需要）
     if (isWeChat && !historyState) {
-      history.pushState({ page: 'zhifu' }, '', window.location.href);
-      historyState = { page: 'zhifu' };
+      try {
+        history.pushState({ page: 'zhifu' }, '', window.location.href);
+        historyState = { page: 'zhifu' };
+      } catch (err) {
+        // 忽略错误，继续执行
+      }
     }
     
     window.addEventListener("DOMContentLoaded", () => {
@@ -364,7 +411,11 @@
       if (backBtn) {
         backBtn.addEventListener("click", () => {
           isNormalNavigation = true;
+          try {
           sessionStorage.removeItem("redirectToIndex");
+        } catch (err) {
+          // 忽略错误
+        }
           shouldRedirect = false;
         });
       }
@@ -372,7 +423,11 @@
       stay?.addEventListener("click", () => {
         exitStep = 0;
         shouldRedirect = false;
-        sessionStorage.removeItem("redirectToIndex");
+        try {
+          sessionStorage.removeItem("redirectToIndex");
+        } catch (err) {
+          // 忽略错误
+        }
         if (redirectTimer) {
           clearTimeout(redirectTimer);
           redirectTimer = null;
